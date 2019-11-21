@@ -36,13 +36,13 @@ class Syntax(val input : ParserInput) extends Parser {
     OrOrElseRule | NotRule
   }
   def OrOrElseRule = rule {
-    AndOrElseRule ~ zeroOrMore("||" ~ AndOrElseRule ~> OrExpr)
+    AndOrElseRule ~ zeroOrMore(Whitespace ~ "||" ~ Whitespace ~ AndOrElseRule ~> OrExpr)
   }
   def AndOrElseRule = rule {
-    XorOrElseRule ~ zeroOrMore("&&" ~ XorOrElseRule ~> AndExpr)
+    XorOrElseRule ~ zeroOrMore(Whitespace ~ "&&" ~ Whitespace ~ XorOrElseRule ~> AndExpr)
   }
   def XorOrElseRule = rule {
-    Factor ~ zeroOrMore("%%" ~ Factor ~> XorExpr)
+    Factor ~ zeroOrMore(Whitespace ~ "%%" ~ Whitespace ~ Factor ~> XorExpr)
   }
 
   // Handling parentheses.
@@ -57,18 +57,30 @@ class Syntax(val input : ParserInput) extends Parser {
     EqualRule | NotEqualRule | GreaterThanRule | GreaterOrEqual |
       LessThan | LessOrEqual | Like | IsTrue
   }
-  def EqualRule = rule { FieldReferenceRule ~ "=" ~ Literal ~> EqualExpr }
-  def NotEqualRule = rule { FieldReferenceRule ~ "!=" ~ Literal ~> NotEqualExpr }
-  def GreaterThanRule = rule { FieldReferenceRule ~ ">" ~ Literal ~> GreaterThanExpr }
-  def GreaterOrEqual = rule { FieldReferenceRule ~ ">=" ~ Literal ~> GreaterOrEqualExpr }
-  def LessThan = rule { FieldReferenceRule ~ "<" ~ Literal ~> LessThanExpr }
-  def LessOrEqual = rule { FieldReferenceRule ~ "<=" ~ Literal ~> LessOrEqualExpr }
-  def Like = rule { FieldReferenceRule ~ "%" ~ Literal ~> LikeExpr }
+  def EqualRule = rule { FieldReferenceRule ~ Whitespace ~ "=" ~ Whitespace ~ Literal ~> EqualExpr }
+  def NotEqualRule = rule { FieldReferenceRule ~ Whitespace ~ "!=" ~ Whitespace ~ Literal ~> NotEqualExpr }
+  def GreaterThanRule = rule { FieldReferenceRule ~ Whitespace ~ ">" ~ Whitespace ~ IntegerLiteral ~> GreaterThanExpr }
+  def GreaterOrEqual = rule { FieldReferenceRule ~ Whitespace ~ ">=" ~ Whitespace ~ IntegerLiteral ~> GreaterOrEqualExpr }
+  def LessThan = rule { FieldReferenceRule ~ Whitespace ~ "<" ~ Whitespace ~ IntegerLiteral ~> LessThanExpr }
+  def LessOrEqual = rule { FieldReferenceRule ~ Whitespace ~ "<=" ~ Whitespace ~ IntegerLiteral ~> LessOrEqualExpr }
+  def Like = rule { FieldReferenceRule ~ Whitespace ~ "%" ~ Whitespace ~ StringLiteral ~> LikeExpr }
   def IsTrue = rule { FieldReferenceRule ~> IsTrueExpr }
 
   // Literals
   def FieldReferenceRule = rule { "[" ~ capture(oneOrMore(CharPredicate.AlphaNum ++ '-' ++ ' ' ++  '_' ++ '(' ++ ':' ++')')) ~ "]"  ~> FieldReference }
-  def Literal = rule { capture(oneOrMore(CharPredicate.AlphaNum)) ~> (_.toString) }
+
+  def IntegerLiteral = rule { capture(oneOrMore(CharPredicate.Digit)) }
+  def StringLiteral = rule { '"' ~ capture(oneOrMore(CharPredicate.AlphaNum)) ~ '"'}
+
+  def Literal = rule { (IntegerLiteral | StringLiteral ) ~> (_.toString) }
+
+  def Whitespace = rule {
+    zeroOrMore(anyOf(" \n \r"))
+  }
+
+  def OneOrMoreWhitespace = rule {
+    oneOrMore(anyOf(" \n \r"))
+  }
 }
 
 

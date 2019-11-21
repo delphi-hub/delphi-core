@@ -29,7 +29,7 @@ import scala.util.{Failure, Success}
 class SyntaxTest extends FlatSpec with Matchers {
 
   "Syntax.singularConditionWithOperator" should "be valid" in {
-    val parseResult = new Syntax("[Filter1]=abc").QueryRule.run()
+    val parseResult = new Syntax("[Filter1]=\"abc\"").QueryRule.run()
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
@@ -165,7 +165,7 @@ class SyntaxTest extends FlatSpec with Matchers {
   }
 
   "Syntax.notConditionComplex" should "be valid" in {
-    val parseResult = new Syntax("!!([Filter1])&&!([Filter2]<=0||!([Filter3]&&![Filter4]%abc))").QueryRule.run()
+    val parseResult = new Syntax("!!([Filter1])&&!([Filter2]<=0||!([Filter3]&&![Filter4]%\"abc\"))").QueryRule.run()
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
