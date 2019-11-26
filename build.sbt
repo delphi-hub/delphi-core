@@ -38,8 +38,6 @@ lazy val supportedScalaVersions = List(scala212, scala213)
 ThisBuild / scalaVersion := scala213
 
 
-useGpg := true
-
 lazy val root = (project in file("."))
   .settings (
     crossScalaVersions := Nil,
