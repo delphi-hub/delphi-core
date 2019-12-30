@@ -16,7 +16,8 @@
 
 package de.upb.cs.swt.delphi.core
 
-import de.upb.cs.swt.delphi.core.ql.Syntax
+import de.upb.cs.swt.delphi.core.ql._
+import org.parboiled2.ParseError
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.util.{Failure, Success}
@@ -166,7 +167,7 @@ class SyntaxTest extends FlatSpec with Matchers {
 
   "Syntax.notConditionComplex" should "be valid" in {
     val parseResult = new Syntax("!!([Filter1])&&!([Filter2]<=0||!([Filter3]&&![Filter4]%\"abc\"))").QueryRule.run()
-    parseResult shouldBe a [Success[_]]
+    parseResult shouldBe a[Success[_]]
     parseResult match {
       case Success(ast) => {
         ast.toString shouldEqual "AndExpr(NotExpr(NotExpr(IsTrueExpr(FieldReference(Filter1))))," +
@@ -175,4 +176,23 @@ class SyntaxTest extends FlatSpec with Matchers {
       }
     }
   }
+
+    "Complex query" should "be valid" in {
+      val parser = new Syntax("[metrics.classversion.9] > 0 && [metrics.classversion.8] = 0 && [maven.groupId] = \"com.github.xmlet\"")
+      val parseResult = parser.QueryRule.run()
+      parseResult match {
+        case Success(ast) => {
+          ast shouldEqual
+            AndExpr(
+              AndExpr(
+                GreaterThanExpr(FieldReference("metrics.classversion.9"),"0"),
+                EqualExpr(FieldReference("metrics.classversion.8"),"0")),
+              EqualExpr(FieldReference("maven.groupId"),"com.github.xmlet"))
+        }
+        case Failure(exception : ParseError) => {
+          fail(parser.formatError(exception))
+        }
+        case _ => fail()
+      }
+    }
 }

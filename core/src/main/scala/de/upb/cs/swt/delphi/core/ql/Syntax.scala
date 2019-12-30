@@ -67,10 +67,10 @@ class Syntax(val input : ParserInput) extends Parser {
   def IsTrue = rule { FieldReferenceRule ~> IsTrueExpr }
 
   // Literals
-  def FieldReferenceRule = rule { "[" ~ capture(oneOrMore(CharPredicate.AlphaNum ++ '-' ++ ' ' ++  '_' ++ '(' ++ ':' ++')')) ~ "]"  ~> FieldReference }
+  def FieldReferenceRule = rule { "[" ~ capture(oneOrMore(CharPredicate.AlphaNum ++ '.' ++ '-' ++ ' ' ++  '_' ++ '(' ++ ':' ++')')) ~ "]"  ~> FieldReference }
 
   def IntegerLiteral = rule { capture(oneOrMore(CharPredicate.Digit)) }
-  def StringLiteral = rule { '"' ~ capture(oneOrMore(CharPredicate.AlphaNum)) ~ '"'}
+  def StringLiteral = rule { '"' ~ capture(oneOrMore(CharPredicate.Printable -- '"' )) ~ '"'}
 
   def Literal = rule { (IntegerLiteral | StringLiteral ) ~> (_.toString) }
 
