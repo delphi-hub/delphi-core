@@ -29,7 +29,7 @@ ThisBuild / publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
-ThisBuild / version      := "0.9.1"
+ThisBuild / version      := "0.9.2"
 
 lazy val scala212 = "2.12.10"
 lazy val scala213 = "2.13.1"

@@ -16,6 +16,8 @@
 
 package de.upb.cs.swt.delphi.core.ql
 
+case class Query(expr : CombinatorialExpr, selections : Seq[FieldReference] = Seq())
+
 trait CombinatorialExpr
 
 case class AndExpr(left: CombinatorialExpr, right: CombinatorialExpr) extends CombinatorialExpr
