@@ -28,8 +28,9 @@ import org.parboiled2.{CharPredicate, Parser, ParserInput, Rule1}
 class Syntax(val input : ParserInput) extends Parser {
 
   def QueryRule = rule {
-    CombinatorialRule ~ EOI
+    CombinatorialRule ~ zeroOrMore(Whitespace ~ FieldSelection) ~ EOI ~> Query
   }
+
 
   // Combinatorial rules.
   def CombinatorialRule : Rule1[CombinatorialExpr] = rule {
@@ -67,7 +68,8 @@ class Syntax(val input : ParserInput) extends Parser {
   def IsTrue = rule { FieldReferenceRule ~> IsTrueExpr }
 
   // Literals
-  def FieldReferenceRule = rule { "[" ~ capture(oneOrMore(CharPredicate.AlphaNum ++ '.' ++ '-' ++ ' ' ++  '_' ++ '(' ++ ':' ++')')) ~ "]"  ~> FieldReference }
+  def FieldReferenceRule = rule { "[" ~ capture(oneOrMore(FieldAlphabet)) ~ "]"  ~> FieldReference }
+  def FieldAlphabet = CharPredicate.AlphaNum ++ '.' ++ '-' ++ ' ' ++  '_' ++ '(' ++ ':' ++')'
 
   def IntegerLiteral = rule { capture(oneOrMore(CharPredicate.Digit)) }
   def StringLiteral = rule { '"' ~ capture(oneOrMore(CharPredicate.Printable -- '"' )) ~ '"'}
@@ -81,6 +83,10 @@ class Syntax(val input : ParserInput) extends Parser {
   def OneOrMoreWhitespace = rule {
     oneOrMore(anyOf(" \n \r"))
   }
+
+  // Field selection
+  def FieldSelection = rule { '#' ~ "[" ~ capture(oneOrMore(ExtendedFieldAlphabet)) ~ "]" ~> FieldReference}
+  def ExtendedFieldAlphabet = FieldAlphabet ++ '*'
 }
 
 

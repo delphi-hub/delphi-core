@@ -26,6 +26,7 @@ import scala.util.{Failure, Success}
   * Tests for the DelphiQL syntax.
   *
   * @author Lisa Nguyen Quang Do
+  *  @author Ben Hermann
   */
 class SyntaxTest extends FlatSpec with Matchers {
 
@@ -34,7 +35,7 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-       ast.toString shouldEqual "EqualExpr(FieldReference(Filter1),abc)"
+       ast shouldEqual Query(EqualExpr(FieldReference("Filter1"),"abc"))
       }
     }
   }
@@ -45,7 +46,7 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "IsTrueExpr(FieldReference(Filter1))"
+        ast shouldEqual Query(IsTrueExpr(FieldReference("Filter1")))
       }
     }
   }
@@ -67,7 +68,11 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(IsTrueExpr(FieldReference(Filter1)),EqualExpr(FieldReference(Filter2),3))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              IsTrueExpr(FieldReference("Filter1")),
+              EqualExpr(FieldReference("Filter2"),"3")))
       }
     }
   }
@@ -78,8 +83,13 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "OrExpr(IsTrueExpr(FieldReference(Filter1)),AndExpr(IsTrueExpr(FieldReference(Filter2))," +
-          "OrExpr(LessThanExpr(FieldReference(Filter3),3),GreaterThanExpr(FieldReference(Filter4),0))))"
+        ast shouldEqual
+          Query(
+            OrExpr(
+              IsTrueExpr(FieldReference("Filter1")),
+              AndExpr(IsTrueExpr(FieldReference("Filter2")),
+                OrExpr(LessThanExpr(FieldReference("Filter3"),"3"),
+                  GreaterThanExpr(FieldReference("Filter4"),"0")))))
       }
     }
   }
@@ -90,8 +100,14 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(IsTrueExpr(FieldReference(Filter1)),XorExpr(OrExpr(LessThanExpr(FieldReference(Filter2),3)," +
-          "GreaterThanExpr(FieldReference(Filter2),0)),AndExpr(IsTrueExpr(FieldReference(Filter4)),IsTrueExpr(FieldReference(Filter5)))))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              IsTrueExpr(FieldReference("Filter1")),
+              XorExpr(OrExpr(LessThanExpr(FieldReference("Filter2"),"3"),
+                GreaterThanExpr(FieldReference("Filter2"),"0")),
+                AndExpr(IsTrueExpr(FieldReference("Filter4")),
+                  IsTrueExpr(FieldReference("Filter5"))))))
       }
     }
   }
@@ -112,8 +128,13 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(AndExpr(IsTrueExpr(FieldReference(Filter1))," +
-          "IsTrueExpr(FieldReference(Filter2))),IsTrueExpr(FieldReference(Filter3)))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              AndExpr(
+                IsTrueExpr(FieldReference("Filter1")),
+                IsTrueExpr(FieldReference("Filter2"))),
+              IsTrueExpr(FieldReference("Filter3"))))
       }
     }
   }
@@ -123,8 +144,15 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "OrExpr(IsTrueExpr(FieldReference(Filter1)),AndExpr(XorExpr(" +
-          "IsTrueExpr(FieldReference(Filter2)),NotExpr(IsTrueExpr(FieldReference(Filter3)))),IsTrueExpr(FieldReference(Filter4))))"
+        ast shouldEqual
+          Query(
+            OrExpr(
+              IsTrueExpr(FieldReference("Filter1")),
+              AndExpr(
+                XorExpr(
+                  IsTrueExpr(FieldReference("Filter2")),
+                  NotExpr(IsTrueExpr(FieldReference("Filter3")))),
+                IsTrueExpr(FieldReference("Filter4")))))
       }
     }
   }
@@ -135,9 +163,16 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(OrExpr(IsTrueExpr(FieldReference(Filter1)),IsTrueExpr(FieldReference(Filter2)))," +
-          "XorExpr(NotExpr(IsTrueExpr(FieldReference(Filter3))),NotExpr(AndExpr(IsTrueExpr(FieldReference(Filter4))," +
-          "IsTrueExpr(FieldReference(Filter5))))))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              OrExpr(
+                IsTrueExpr(FieldReference("Filter1")),
+                IsTrueExpr(FieldReference("Filter2"))),
+              XorExpr(
+                NotExpr(IsTrueExpr(FieldReference("Filter3"))),
+                NotExpr(AndExpr(IsTrueExpr(FieldReference("Filter4")),
+                  IsTrueExpr(FieldReference("Filter5")))))))
       }
     }
   }
@@ -148,8 +183,11 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(NotExpr(IsTrueExpr(FieldReference(Filter1)))," +
-          "NotExpr(IsTrueExpr(FieldReference(Filter2))))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              NotExpr(IsTrueExpr(FieldReference("Filter1"))),
+              NotExpr(IsTrueExpr(FieldReference("Filter2")))))
       }
     }
   }
@@ -159,8 +197,12 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a [Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "NotExpr(AndExpr(IsTrueExpr(FieldReference(Filter1))," +
-          "NotExpr(IsTrueExpr(FieldReference(Filter2)))))"
+        ast shouldEqual
+          Query(
+            NotExpr(
+              AndExpr(
+                IsTrueExpr(FieldReference("Filter1")),
+                NotExpr(IsTrueExpr(FieldReference("Filter2"))))))
       }
     }
   }
@@ -170,9 +212,16 @@ class SyntaxTest extends FlatSpec with Matchers {
     parseResult shouldBe a[Success[_]]
     parseResult match {
       case Success(ast) => {
-        ast.toString shouldEqual "AndExpr(NotExpr(NotExpr(IsTrueExpr(FieldReference(Filter1))))," +
-          "NotExpr(OrExpr(LessOrEqualExpr(FieldReference(Filter2),0),NotExpr(AndExpr(IsTrueExpr(FieldReference(Filter3))," +
-          "NotExpr(LikeExpr(FieldReference(Filter4),abc)))))))"
+        ast shouldEqual
+          Query(
+            AndExpr(
+              NotExpr(
+                NotExpr(IsTrueExpr(FieldReference("Filter1")))),
+              NotExpr(
+                OrExpr(
+                  LessOrEqualExpr(FieldReference("Filter2"),"0"),
+                  NotExpr(AndExpr(IsTrueExpr(FieldReference("Filter3")),
+                    NotExpr(LikeExpr(FieldReference("Filter4"),"abc"))))))))
       }
     }
   }
@@ -183,11 +232,28 @@ class SyntaxTest extends FlatSpec with Matchers {
       parseResult match {
         case Success(ast) => {
           ast shouldEqual
-            AndExpr(
+            Query(AndExpr(
               AndExpr(
                 GreaterThanExpr(FieldReference("metrics.classversion.9"),"0"),
                 EqualExpr(FieldReference("metrics.classversion.8"),"0")),
-              EqualExpr(FieldReference("maven.groupId"),"com.github.xmlet"))
+              EqualExpr(FieldReference("maven.groupId"),"com.github.xmlet")))
+        }
+        case Failure(exception : ParseError) => {
+          fail(parser.formatError(exception))
+        }
+        case _ => fail()
+      }
+    }
+
+    "Single field selection" should "be valid" in {
+      val parser = new Syntax("[metrics.api.unsafe.heapget]>0 #[metrics.bytecode.*]")
+      val parseResult = parser.QueryRule.run()
+      parseResult match {
+        case Success(ast) => {
+          ast shouldEqual
+            Query(
+              GreaterThanExpr(FieldReference("metrics.api.unsafe.heapget"),"0"),
+              Seq(FieldReference("metrics.bytecode.*")))
         }
         case Failure(exception : ParseError) => {
           fail(parser.formatError(exception))
