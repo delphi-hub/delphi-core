@@ -2,10 +2,10 @@
 
 Core components for the Delphi platform
 
-|branch | status | codacy | snyk |
-| :---: | :---: | :---: | :---: |  
-| master | [![Build Status](https://travis-ci.org/delphi-hub/delphi-core.svg?branch=master)](https://travis-ci.org/delphi-hub/delphi-core) | | 
-| develop | [![Build Status](https://travis-ci.org/delphi-hub/delphi-core.svg?branch=develop)](https://travis-ci.org/delphi-hub/delphi-core) | |
+|branch | status | codacy | coverage | snyk |
+| :---: | :---: | :---: | :---: |  :---: |  
+| master | [![Build Status](https://travis-ci.org/delphi-hub/delphi-core.svg?branch=master)](https://travis-ci.org/delphi-hub/delphi-core) | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/395d1d2ea48b47b79288d6ec5fdcb572)](https://www.codacy.com/manual/delphi-hub/delphi-core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=delphi-hub/delphi-core&amp;utm_campaign=Badge_Grade) | [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/395d1d2ea48b47b79288d6ec5fdcb572)](https://www.codacy.com/manual/delphi-hub/delphi-core?utm_source=github.com&utm_medium=referral&utm_content=delphi-hub/delphi-core&utm_campaign=Badge_Coverage) | |
+| develop | [![Build Status](https://travis-ci.org/delphi-hub/delphi-core.svg?branch=develop)](https://travis-ci.org/delphi-hub/delphi-core) | | | |
 
 ## What can you find here?
 
